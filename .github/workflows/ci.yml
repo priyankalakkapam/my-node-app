@@ -1,18 +1,17 @@
-name: Environment Based CI/CD
+name: TST Pipeline
 
 on:
   push:
     branches:
       - develop
-      - staging
-      - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment: TST
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -20,38 +19,11 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Dependencies
+      - name: Install
         run: npm install
 
       - name: Build
-        run: echo "Build completed 🚀"
+        run: echo "Building for TST"
 
-  deploy-tst:
-    if: github.ref == 'refs/heads/develop'
-    needs: build
-    runs-on: ubuntu-latest
-    environment: TST
-
-    steps:
-      - name: Deploy to TST
-        run: echo "Deploying to TEST environment"
-
-  deploy-stg:
-    if: github.ref == 'refs/heads/staging'
-    needs: build
-    runs-on: ubuntu-latest
-    environment: STG
-
-    steps:
-      - name: Deploy to STG
-        run: echo "Deploying to STAGING environment"
-
-  deploy-prd:
-    if: github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    environment: PRD
-
-    steps:
-      - name: Deploy to PRD
-        run: echo "Deploying to PRODUCTION environment"
+      - name: Deploy
+        run: echo "Deploying to TEST environment 🚀"
