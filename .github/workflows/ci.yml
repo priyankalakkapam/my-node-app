@@ -1,14 +1,14 @@
-name: TST Pipeline
+name: STG Pipeline
 
 on:
   push:
     branches:
-      - develop
+      - staging
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: TST
+    environment: STG
 
     steps:
       - name: Checkout Code
@@ -23,7 +23,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: echo "Building for TST"
+        run: echo "Building for STG"
 
       - name: Deploy
-        run: echo "Deploying to TEST environment 🚀"
+        run: echo "Deploying to STAGING environment 🚀"
