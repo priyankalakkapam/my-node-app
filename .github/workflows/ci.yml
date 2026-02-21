@@ -1,35 +1,57 @@
-name: Node.js CI Pipeline
+name: Environment Based CI/CD
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
+      - develop
+      - staging
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Run build
-        run: echo "Build Successful 🚀"
+      - name: Build
+        run: echo "Build completed 🚀"
 
-      - name: Run tests
-        run: npm test || echo "No tests defined"
+  deploy-tst:
+    if: github.ref == 'refs/heads/develop'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: TST
+
+    steps:
+      - name: Deploy to TST
+        run: echo "Deploying to TEST environment"
+
+  deploy-stg:
+    if: github.ref == 'refs/heads/staging'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: STG
+
+    steps:
+      - name: Deploy to STG
+        run: echo "Deploying to STAGING environment"
+
+  deploy-prd:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: PRD
+
+    steps:
+      - name: Deploy to PRD
+        run: echo "Deploying to PRODUCTION environment"
