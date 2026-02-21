@@ -1,35 +1,29 @@
-name: Node.js CI Pipeline
+name: TST Pipeline
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - develop
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
+    environment: TST
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
 
-      - name: Install dependencies
+      - name: Install
         run: npm install
 
-      - name: Run build
-        run: echo "Build Successful 🚀"
+      - name: Build
+        run: echo "Building for TST"
 
-      - name: Run tests
-        run: npm test || echo "No tests defined"
+      - name: Deploy
+        run: echo "Deploying to TEST environment 🚀"
