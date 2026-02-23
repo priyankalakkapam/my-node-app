@@ -1,12 +1,13 @@
-name: TST Pipeline
+name: TST Docker Build & Push
 
 on:
   push:
     branches:
       - develop
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     environment: TST
 
@@ -14,16 +15,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          node-version: 18
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Install
-        run: npm install
+      - name: Login to ACR
+        run: |
+          az acr login --name fastxeacr
 
-      - name: Build
-        run: echo "Building for TST"
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/uifastxe:${{ github.run_number }} .
 
-      - name: Deploy
-        run: echo "Deploying to TEST environment 🚀"
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/uifastxe:${{ github.run_number }}
+
+      - name: Cleanup Old Images
+        run: |
+          docker image prune -af
